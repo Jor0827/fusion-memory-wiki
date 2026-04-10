@@ -49,15 +49,13 @@ pip install chroma-hnswlib
 # Navigate to your workspace
 cd C:\path\to\your\workspace
 
-# Create directories
-mkdir wiki\pages\entities
-mkdir wiki\pages\concepts
-mkdir wiki\pages\decisions
-mkdir wiki\pages\synthesis
-mkdir wiki\raw\articles
-mkdir wiki\raw\exports
-mkdir wiki\raw\assets
-mkdir memory
+# Create all directories at once (recommended for Windows)
+New-Item -ItemType Directory -Path wiki/pages/entities, wiki/pages/concepts, wiki/pages/decisions, wiki/pages/synthesis, wiki/raw/articles, wiki/raw/exports, wiki/raw/assets, memory -Force
+
+# Alternative: separate mkdir commands (Linux/macOS preferred)
+# mkdir -p wiki/pages/entities wiki/pages/concepts wiki/pages/decisions wiki/pages/synthesis
+# mkdir -p wiki/raw/articles wiki/raw/exports wiki/raw/assets
+# mkdir memory
 ```
 
 ### 3. Initialize MemPalace
@@ -95,6 +93,94 @@ Create `MEMORY.md` in workspace root:
 ## Preferences
 [Your human's preferences]
 ```
+
+Create `AGENTS.md` in workspace root (⚠️ **most critical file** — this is auto-injected into every session):
+
+```markdown
+# AGENTS.md - Your Workspace
+
+## Session Startup
+
+Before doing anything else:
+
+1. Read `SOUL.md` — this is who you are
+2. Read `USER.md` — this is who you're helping
+3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+4. Also read `MEMORY.md`
+
+## Memory — 三层融合架构
+
+You wake up fresh each session. These files are your continuity:
+
+```
+MEMORY.md      ← L0: 核心索引（session 启动必读）
+memory/        ← L1: 每日日志（YYYY-MM-DD.md）
+wiki/          ← L2: 结构化知识库
+```
+
+### 🔧 操作速查（必读）
+
+**写文件必须用你的平台对应的编码安全工具**（不要直接用 write 工具）：
+
+<details>
+<summary>OpenClaw + qclaw-text-file skill 的写文件流程</summary>
+
+```
+1. 先读取 skill: read("path/to/qclaw-text-file/SKILL.md")
+2. 内容写到临时文件: write(path="/tmp/_tw_xxx.md", content=...)
+3. 用脚本写入目标文件: exec("python path/to/write_file.py --path <目标路径> --content-file <临时文件>")
+4. 删除临时文件
+```
+
+</details>
+
+<details>
+<summary>通用建议（非 OpenClaw 平台）</summary>
+
+- 确保文件编码为 UTF-8（Windows 上建议 UTF-8 with BOM 用于 CSV）
+- 使用平台推荐的换行符（Windows: CRLF, macOS/Linux: LF）
+- 写入后验证文件可正常读取
+
+</details>
+
+**记录日志到 memory/YYYY-MM-DD.md**：
+- 格式：`## [HH:MM] 事件标题` + 正文
+- 追加模式：先 read 现有内容，拼接后再写回
+
+**创建/更新 Wiki 页面**：
+- 先读 `wiki/SCHEMA.md` 了解页面格式规范
+- 页面放入 `wiki/pages/{entities|concepts|decisions|synthesis}/`
+- 写完后更新 `wiki/index.md` 索引
+- 在 `wiki/log.md` 记录操作
+
+**更新 MemPalace 索引**：
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+mempalace mine "path/to/workspace"
+```
+
+**搜索记忆**：
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+mempalace search "关键词"
+```
+
+## Memory Maintenance Flow
+
+1. **During sessions**: Write to `memory/YYYY-MM-DD.md` for logs
+2. **When decisions happen**: Update `MEMORY.md` + create decision page in wiki
+3. **After writing files**: Run `mempalace mine` to update vector index
+
+## Write It Down - No "Mental Notes"!
+
+- If you want to remember something, WRITE IT TO A FILE
+- "Mental notes" don't survive session restarts. Files do.
+- **Text > Brain** 📝
+```
+
+> ⚠️ **Why AGENTS.md is critical**: This file is auto-injected into every session's system prompt.
+> Without it, the agent knows nothing about the memory system even if all wiki/ and memory/ files exist.
+> The "操作速查" section provides concrete steps — architecture descriptions alone are NOT enough.
 
 Create `wiki/SCHEMA.md`:
 

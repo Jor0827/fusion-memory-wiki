@@ -35,6 +35,8 @@ A fusion memory architecture that combines two complementary approaches:
 
 ## Quick Start
 
+> ⚠️ **Windows Users**: Always set `$env:PYTHONIOENCODING = "utf-8"` before running MemPalace commands to avoid Unicode/emoji display issues.
+
 ### Prerequisites
 
 ```bash
@@ -144,7 +146,10 @@ mempalace mine "C:\path\to\your\workspace"
 
 ```
 your-workspace/
+├── AGENTS.md              # ⚠️ CRITICAL: 操作指令（auto-injected every session）
 ├── MEMORY.md              # L0: Core index
+├── SOUL.md                # Agent identity and values
+├── USER.md                # User info and preferences
 ├── memory/
 │   └── YYYY-MM-DD.md      # L1: Daily logs
 ├── wiki/
@@ -163,6 +168,10 @@ your-workspace/
 ├── mempalace.yaml         # MemPalace config
 └── ...                    # Your other files
 ```
+
+> ⚠️ **AGENTS.md is the most important file**. It's auto-injected into every session.
+> Without operational instructions there, agents will know the system exists but won't know how to use it.
+> See [SETUP.md](SETUP.md) step 4 for the required content.
 
 ## Inspiration
 

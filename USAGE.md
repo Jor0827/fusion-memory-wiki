@@ -297,6 +297,61 @@ Agent C reads both → knows X + Y → can connect them
 - Tutorial: [Link]
 ```
 
+## ⚠️ Known Pitfalls & Troubleshooting
+
+### "Agent doesn't use the memory system"
+
+This is the **#1 reported issue**. Symptoms:
+- Agent knows about the system (you told it, or it read the docs) but doesn't write files
+- Agent writes files in wrong format or wrong location
+- Old sessions ignore the memory system entirely
+
+**Root cause**: Architecture descriptions in AGENTS.md are NOT enough. The agent also needs **concrete operational instructions** — exact steps for writing files, which tools to use, and what format to follow.
+
+**Fix**: Ensure `AGENTS.md` includes ALL of these:
+
+| Instruction | Example |
+|-------------|---------|
+| How to write files safely | "Use qclaw-text-file skill's write_file.py" or equivalent |
+| Where to write | "Log to `memory/YYYY-MM-DD.md`" |
+| What format | "## [HH:MM] Event title" |
+| Post-write action | "Run `mempalace mine` after writing" |
+| Wiki operation flow | "Read SCHEMA.md → write page → update index → log" |
+
+**For old sessions**: Sessions that started before AGENTS.md was updated will have the old version in context. Even if you ask the agent to re-read AGENTS.md, it may not internalize the new instructions if the conversation history is long (context window pressure). **Recommendation: start a new session** after updating AGENTS.md.
+
+### "Unicode errors on Windows"
+
+```powershell
+# Always set before running mempalace
+$env:PYTHONIOENCODING = "utf-8"
+```
+
+### "Empty search results"
+
+```powershell
+# Re-index
+mempalace mine "path/to/workspace"
+
+# Check status
+mempalace status
+```
+
+### "chroma-hnswlib build fails"
+
+This is optional. ChromaDB works without it. If you need it:
+- Try `pip install chroma-hnswlib==0.7.6a9` (has precompiled wheels for Windows)
+- Or `pip install mempalace --no-deps` then install dependencies separately
+
+### "Old session doesn't follow updated instructions"
+
+Workspace files (AGENTS.md, SOUL.md, etc.) are injected once at session start. They don't refresh mid-session. Even if the agent re-reads the file, it has a full conversation history competing for context window space.
+
+**Solutions**:
+1. **Best**: Start a new session after updating workspace files
+2. **Workaround**: Ask the agent to re-read the specific file, then give a short prompt that triggers the behavior (don't assume it will "just know")
+3. **Prevention**: Put the most critical instructions at the TOP of AGENTS.md, not buried in sections
+
 ---
 
 _This system grows more valuable with consistent use. Make logging a habit._
